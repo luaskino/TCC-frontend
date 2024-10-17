@@ -184,7 +184,7 @@
 
     async function cargarCategorias() {
         try {
-            const response = await fetch('http://localhost:5000/categorias');
+            const response = await fetch('http://127.0.0.1:5000/categorias');
             const categorias = await response.json();
             const selectCategoria = document.getElementById('categoria');
             
@@ -213,7 +213,7 @@
         };
 
         try {
-            const response = await fetch('http://localhost:5000/pedido_ayuda', {
+            const response = await fetch('http://127.0.0.1:5000/pedido_ayuda', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

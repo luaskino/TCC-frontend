@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Pedidos</title>
@@ -147,10 +148,10 @@
     <script>
         // Obtener el usuario logueado
         const usuario_id = localStorage.getItem('usuario_id');
-
+    
         // Función para listar los pedidos del usuario
         function listarPedidos() {
-            fetch(`http://localhost:5000/pedido_ayuda/usuario/${usuario_id}`)
+            fetch(`http://127.0.0.1:5000/pedido_ayuda/usuario/${usuario_id}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Error al obtener los pedidos');
@@ -160,7 +161,7 @@
                 .then(pedidos => {
                     const tbody = document.querySelector('#tabla-pedidos tbody');
                     const mensajeVacio = document.getElementById('mensaje-vacio');
-
+    
                     if (pedidos.length === 0) {
                         mensajeVacio.style.display = 'block'; // Mostrar mensaje si no hay pedidos
                     } else {
@@ -175,11 +176,19 @@
                                 <td><a class="ubicacion" href="${pedido.ubicacion}" target="_blank">Ver en Maps</a></td>
                                 <td>${pedido.nombre_completo}<br>${pedido.celular}<br>${pedido.email}</td>
                                 <td>
-                                    <button class="btn-icon" title="Finalizar"><i class="fas fa-check"></i></button>
+                                    <button class="btn-icon finalizar-btn" data-id="${pedido.pedido_id}" title="Finalizar"><i class="fas fa-check"></i></button>
                                     <button class="btn-icon" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                                 </td>
                             `;
                             tbody.appendChild(tr);
+                        });
+    
+                        // Agregar el evento click a los botones de finalizar
+                        document.querySelectorAll('.finalizar-btn').forEach(button => {
+                            button.addEventListener('click', function () {
+                                const pedidoId = this.getAttribute('data-id');
+                                confirmarFinalizacion(pedidoId);
+                            });
                         });
                     }
                 })
@@ -187,9 +196,61 @@
                     console.error(error);
                 });
         }
-
+    
+        // Función para confirmar finalización del pedido
+        function confirmarFinalizacion(pedidoId) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, finalizar pedido'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    finalizarPedido(pedidoId);
+                }
+            });
+        }
+    
+        // Función para finalizar el pedido
+        function finalizarPedido(pedidoId) {
+            fetch(`http://127.0.0.1:5000/finalizar_pedido_ayuda/${pedidoId}`, {
+                method: 'PUT', // O POST si es necesario
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al finalizar el pedido');
+                }
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    title: 'Pedido Finalizado',
+                    text: 'El pedido ha sido finalizado exitosamente',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload(); // Refrescar la página
+                });
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al finalizar el pedido',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                console.error(error);
+            });
+        }
+    
         // Llamar a la función para listar los pedidos al cargar la página
         listarPedidos();
-    </script>
+    </script>    
 </body>
 </html>

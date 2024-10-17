@@ -154,7 +154,7 @@
         // Obtener ciudades de la API y llenar el select de ciudades
         async function cargarCiudades() {
             try {
-                const response = await fetch('http://localhost:5000/ciudad');
+                const response = await fetch('http://127.0.0.1:5000/ciudad');
                 const ciudades = await response.json();
 
                 const selectCiudad = document.getElementById('ciudad');
