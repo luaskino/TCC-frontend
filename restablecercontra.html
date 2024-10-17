@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <style>
+        .reset-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto;
+            width: 80%;
+            max-width: 400px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 5px rgba(106, 13, 173, 0.5);
+        }
+
+        .reset-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .reset-container p {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .reset-container input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+        }
+
+        .reset-container input[type="email"]:focus {
+            outline: none;
+            border-color: #6a0dad;
+            box-shadow: 0 0 5px rgba(106, 13, 173, 0.5);
+        }
+
+        .reset-container button {
+            width: 100%;
+            padding: 10px 20px;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .reset-container button:hover {
+            background-color: #4b0082;
+        }
+
+        .reset-container a {
+            display: inline-block;
+            text-align: center;
+            padding: 10px 20px;
+            background-color: #6a0dad;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .reset-container a:hover {
+            background-color: #4b0082;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <h1>AguyjePY</h1>
+    <div class="reset-container">
+        <h2>Restablecer Contraseña</h2>
+        <p>Ingresa tu correo electrónico para recibir el enlace de restablecimiento de contraseña:</p>
+        
+        
+        <form id="resetForm">
+            <input type="email" name="email" placeholder="Correo electrónico" required>
+            <button type="submit">Enviar enlace</button>
+        </form>
+
+        <a href="login.html" class="logout-button">Salir</a>
+    </div>
+
+    <script>
+        document.getElementById('resetForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const email = formData.get('email');
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/solicitar-recuperacion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Enlace enviado',
+                        text: result.message,
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.error,
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al enviar la solicitud.',
+                });
+            }
+        });
+    </script>
+</body>
+</html>

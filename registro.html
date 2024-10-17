@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <style>
+        .registro-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+            border: 2px solid #6a0dad;
+            padding: 20px;
+            border-radius: 10px;
+            width: 350px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: rgb(244, 204, 244);
+        }
+
+        .registro-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .registro-container form input[type="text"],
+        .registro-container form input[type="email"],
+        .registro-container form input[type="number"],
+        .registro-container form select,
+        .registro-container form input[type="password"] {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .registro-container form input[type="submit"] {
+            width: 48%;
+            padding: 10px;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .registro-container form input[type="submit"]:disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+        }
+
+        .registro-container form input[type="submit"]:hover:not([disabled]) {
+            background-color: #4b0082;
+        }
+
+        .registro-container .button-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .registro-container .button-container button {
+            width: 48%;
+            padding: 10px;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .registro-container .button-container button:hover {
+            background-color: #4b0082;
+        }
+
+        .terminos-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .terminos-container input {
+            margin-right: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <h1>AguyjePY</h1>
+    <div class="registro-container">
+        <h2>Crea tu cuenta</h2>
+        <form id="registroForm">
+            <input type="text" name="nombres" placeholder="Nombres" required>
+            <input type="text" name="apellidos" placeholder="Apellidos" required>
+            <input type="number" name="cedula" placeholder="Cédula (sin puntos)" required>
+            <input type="text" name="celular" id="celular" placeholder="Celular" value="+595" required pattern="\+595[0-9]{6,10}" title="El número debe comenzar con +595 seguido de entre 6 a 10 dígitos.">
+            
+            <select name="ciudad" id="ciudad" required>
+                <option value="" disabled selected>Selecciona tu ciudad</option>
+            </select>
+
+            <input type="text" name="barrio" placeholder="Barrio" required>
+            <input type="text" name="direccion" placeholder="Dirección" required>
+            <input type="email" name="correo" placeholder="Correo electrónico" required>
+            <input type="password" name="password" placeholder="Contraseña" required
+                   pattern="(?=.*\d).{8,}" 
+                   title="La contraseña debe tener al menos 8 caracteres y al menos 1 número">
+
+            <div class="terminos-container">
+                <input type="checkbox" id="terminos" name="terminos">
+                <label for="terminos">Acepto los <a href="#" onclick="mostrarTerminos()">Términos y Condiciones</a></label>
+            </div>
+
+            <div class="button-container">
+                <input type="submit" value="Aceptar" id="submitButton" disabled>
+                <button type="button" class="cancelar" onclick="window.location.href='login.html'">Cancelar</button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        // Mostrar términos y condiciones
+        function mostrarTerminos() {
+            Swal.fire({
+                title: 'Términos y Condiciones',
+                html: `
+                    <p><strong>Al registrarte en nuestra plataforma, aceptas que utilizaremos tus datos personales para los siguientes fines:</strong></p>
+                    <ul style="text-align: left; list-style-type: disc; margin-left: 20px;">
+                        <li style="margin-bottom: 10px;">Compartiremos tus datos de contacto y ubicación con los donantes interesados en ofrecer ayuda.</li>
+                        <li style="margin-bottom: 10px;">Tu información será utilizada exclusivamente para facilitar el contacto entre donantes y solicitantes de ayuda.</li>
+                        <li style="margin-bottom: 10px;">No venderemos ni distribuiremos tu información personal a terceros sin tu consentimiento.</li>
+                        <li style="margin-bottom: 10px;">Al registrarte, aceptas recibir notificaciones relacionadas con tu solicitud de ayuda o donaciones.</li>
+                        <li style="margin-bottom: 10px;">Te comprometés a proporcionar información veraz y actualizada.</li>
+                    </ul>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Cerrar'
+            });
+        }
+
+        // Habilitar el botón de envío solo si se aceptan los términos y condiciones
+        const terminosCheckbox = document.getElementById('terminos');
+        const submitButton = document.getElementById('submitButton');
+
+        terminosCheckbox.addEventListener('change', function() {
+            submitButton.disabled = !this.checked;
+        });
+
+        // Obtener ciudades de la API y llenar el select de ciudades
+        async function cargarCiudades() {
+            try {
+                const response = await fetch('http://localhost:5000/ciudad');
+                const ciudades = await response.json();
+
+                const selectCiudad = document.getElementById('ciudad');
+
+                // Borrar las opciones existentes, excepto la opción predeterminada
+                selectCiudad.innerHTML = '<option value="" disabled selected>Selecciona tu ciudad</option>';
+
+                // Llenar el select con las ciudades obtenidas
+                ciudades.forEach(ciudad => {
+                    const option = document.createElement('option');
+                    option.value = ciudad.ciudad_id;
+                    option.textContent = ciudad.descripcion;
+                    selectCiudad.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Error al cargar las ciudades:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al cargar las ciudades. Inténtalo más tarde.',
+                    icon: 'error'
+                });
+            }
+        }
+
+        // Llamar a la función para cargar las ciudades cuando se cargue la página
+        window.onload = cargarCiudades;
+
+        // Manejo del formulario de registro
+        document.getElementById('registroForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            if (!terminosCheckbox.checked) {
+                Swal.fire({
+                    title: 'Debes aceptar los Términos y Condiciones',
+                    icon: 'warning'
+                });
+                return;
+            }
+
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => {
+                if (key === 'cedula' || key === 'celular') {
+                    data[key] = value ? parseInt(value) : 0;
+                } else {
+                    data[key] = value || null;
+                }
+            });
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Registro Exitoso',
+                        text: 'Te has registrado correctamente. Ahora debes activar tu cuenta desde tu correo electrónico. Redirigiendo al inicio de sesión...',
+                        icon: 'success',
+                        timer: 5000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = 'login.html';
+                    });
+                } else {
+                    const error = await response.text();
+                    Swal.fire({
+                        title: 'Error en el Registro',
+                        text: error,
+                        icon: 'error'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema con el servidor. Inténtalo más tarde.',
+                    icon: 'error'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

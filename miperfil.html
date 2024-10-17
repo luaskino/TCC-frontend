@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.5.7/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: #6a0dad;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        nav a:hover {
+            background-color: #4b0082;
+        }
+
+        nav a .icon {
+            font-size: 20px;
+        }
+
+        .profile-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #dfbcc2;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: rgba(223, 188, 194, 255);
+        }
+
+        .profile-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .profile-container input[type="text"],
+        .profile-container input[type="number"],
+        .profile-container input[type="email"],
+        .profile-container select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .profile-container input[type="submit"],
+        .profile-container .button {
+            width: 48%;
+            padding: 10px;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .profile-container input[type="submit"]:hover,
+        .profile-container .button:hover {
+            background-color: #4b0082;
+        }
+
+        .profile-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .edit-button {
+            background-color: #4b0082;
+        }
+
+        .disabled {
+            background-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+
+        .profile-title {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header-container">
+        <h1>AguyjePY</h1>
+        <nav>
+            <a href="pantallaprincipal.html">
+                <i class="fas fa-home icon"></i>
+            </a>
+            <a href="mispedidos.html">Ver Mis Pedidos</a>
+        </nav>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-title">Mi Perfil</div>
+        <form id="profile-form">
+            <label for="nombres">Nombres</label>
+            <input type="text" id="nombres" name="nombres" disabled required>
+
+            <label for="apellidos">Apellidos</label>
+            <input type="text" id="apellidos" name="apellidos" disabled required>
+
+            <label for="cedula">Cédula</label>
+            <input type="number" id="cedula" name="cedula" disabled required>
+
+            <label for="celular">Celular</label>
+            <input type="number" id="celular" name="celular" disabled required>
+
+            <label for="ciudad">Ciudad</label>
+            <select id="ciudad" name="ciudad" disabled required>
+                <option value="">Seleccione una ciudad</option>
+            </select>
+
+            <label for="barrio">Barrio</label>
+            <input type="text" id="barrio" name="barrio" disabled required>
+
+            <label for="direccion">Dirección</label>
+            <input type="text" id="direccion" name="direccion" disabled required>
+
+            <label for="correo">Correo electrónico</label>
+            <input type="email" id="correo" name="correo" disabled required>
+
+            <div class="profile-buttons">
+                <button type="button" class="button edit-button" onclick="enableEditing()">Editar Datos</button>
+                <button type="button" class="button" id="save-changes">Guardar Cambios</button>
+                <button type="button" class="button" onclick="window.location.href='pantallaprincipal.html'">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // usuario_id desde localStorage
+        const usuarioId = localStorage.getItem('usuario_id');
+    
+        // Cargar ciudades desde la API y llenar el select de ciudad
+        function cargarCiudades() {
+            return fetch('http://127.0.0.1:5000/ciudad')  // Retornar la promesa
+                .then(response => response.json())
+                .then(ciudades => {
+                    const ciudadSelect = document.getElementById('ciudad');
+                    ciudades.forEach(ciudad => {
+                        const option = document.createElement('option');
+                        option.value = ciudad.ciudad_id;
+                        option.textContent = ciudad.descripcion;
+                        ciudadSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al cargar las ciudades:', error);
+                });
+        }
+    
+        // Cargar datos del usuario desde la API
+        function cargarDatosUsuario() {
+            fetch(`http://127.0.0.1:5000/usuarios/${usuarioId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('nombres').value = data.nombre;
+                    document.getElementById('apellidos').value = data.apellido;
+                    document.getElementById('cedula').value = data.doc_identidad;
+                    document.getElementById('celular').value = data.celular;
+                    document.getElementById('barrio').value = data.barrio;
+                    document.getElementById('direccion').value = data.direccion;
+                    document.getElementById('correo').value = data.email;
+                    document.getElementById('ciudad').value = data.ciudad_id; // Cargar la ciudad seleccionada
+                })
+                .catch(error => {
+                    console.error('Error al obtener los datos del usuario:', error);
+                });
+        }
+    
+        // Primero cargar las ciudades, luego cargar los datos del usuario
+        cargarCiudades().then(() => {
+            cargarDatosUsuario();
+        });    
+
+        function enableEditing() {
+            const inputs = document.querySelectorAll('.profile-container input, .profile-container select');
+            inputs.forEach(input => input.removeAttribute('disabled'));
+            document.getElementById('save-changes').style.display = 'inline-block';
+        }
+
+        document.getElementById('save-changes').addEventListener('click', () => {
+            const updatedData = {
+                nombres: document.getElementById('nombres').value,
+                apellidos: document.getElementById('apellidos').value,
+                cedula: document.getElementById('cedula').value,
+                celular: document.getElementById('celular').value,
+                ciudad: document.getElementById('ciudad').value,
+                barrio: document.getElementById('barrio').value,
+                direccion: document.getElementById('direccion').value,
+                correo: document.getElementById('correo').value
+            };
+
+            fetch(`http://127.0.0.1:5000/usuarios/${usuarioId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Usuario actualizado exitosamente') {
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: 'Cambios guardados con éxito',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = 'pantallaprincipal.html';
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Hubo un problema al guardar los cambios',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error al guardar los cambios:', error);
+            });
+        });
+    </script>
+</body>
+
+</html>

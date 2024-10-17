@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Pedidos</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: rgb(244, 204, 244); 
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: #6a0dad; 
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        nav a:hover {
+            background-color: #4b0082;
+        }
+
+        nav a .icon {
+            font-size: 20px;
+        }
+
+        h2 {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #6a0dad;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #6a0dad;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .ubicacion {
+            color: blue;
+        }
+
+        .mensaje-vacio {
+            text-align: center;
+            font-size: 18px;
+            color: #6a0dad;
+            margin-top: 20px;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #6a0dad;
+        }
+
+        .btn-icon:hover {
+            color: #4b0082;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header-container">
+        <h1>AguyjePY</h1>
+        <nav>
+            <a href="pantallaprincipal.html">
+                <i class="fas fa-home icon"></i>
+            </a>
+            <a href="miperfil.html">Mi Perfil</a>
+        </nav>
+    </div>
+
+    <h2>Mis Pedidos</h2>
+    <img src="caja.png" alt="Mis Pedidos">
+    
+    <table id="tabla-pedidos">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Ubicación</th>
+                <th>Contacto</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+
+    <div class="mensaje-vacio" id="mensaje-vacio" style="display: none;">
+        No tienes pedidos registrados.
+    </div>
+
+    <script>
+        // Obtener el usuario logueado
+        const usuario_id = localStorage.getItem('usuario_id');
+
+        // Función para listar los pedidos del usuario
+        function listarPedidos() {
+            fetch(`http://localhost:5000/pedido_ayuda/usuario/${usuario_id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al obtener los pedidos');
+                    }
+                    return response.json();
+                })
+                .then(pedidos => {
+                    const tbody = document.querySelector('#tabla-pedidos tbody');
+                    const mensajeVacio = document.getElementById('mensaje-vacio');
+
+                    if (pedidos.length === 0) {
+                        mensajeVacio.style.display = 'block'; // Mostrar mensaje si no hay pedidos
+                    } else {
+                        pedidos.forEach(pedido => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${pedido.pedido_id}</td>
+                                <td>${pedido.descripcion_pedido}</td>
+                                <td>${pedido.categoria_descripcion}</td> <!-- Mostrar descripción de la categoría -->
+                                <td>${pedido.estado}</td>
+                                <td>${new Date(pedido.fecha).toLocaleDateString()}</td>
+                                <td><a class="ubicacion" href="${pedido.ubicacion}" target="_blank">Ver en Maps</a></td>
+                                <td>${pedido.nombre_completo}<br>${pedido.celular}<br>${pedido.email}</td>
+                                <td>
+                                    <button class="btn-icon" title="Finalizar"><i class="fas fa-check"></i></button>
+                                    <button class="btn-icon" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+        // Llamar a la función para listar los pedidos al cargar la página
+        listarPedidos();
+    </script>
+</body>
+</html>

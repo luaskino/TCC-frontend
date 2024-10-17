@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="En nuestra página web ofrecemos un espacio accesible donde las personas pueden conectarse de manera fácil, formando una red de apoyo mutuo. Juntos, estamos transformando la buena voluntad en acción.">
+
+    <title>Aguyje PY</title>
+
+    <style>
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-container h1 {
+            margin-right: 20px;
+        }
+
+        nav.menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+        
+        nav.menu ul li {
+            margin-right: 20px;
+        }
+
+        nav.menu ul li ul {
+            display: none;
+            position: absolute;
+            list-style-type: none;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        nav.menu ul li:hover ul {
+            display: block;
+        }
+
+        nav.menu ul li ul li {
+            margin: 0;
+            padding: 5px 0;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #6a0dad;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #4b0082;
+        }
+
+        /* Estilos para el formulario de login */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+            border: 2px solid #6a0dad; 
+            padding: 20px;
+            border-radius: 10px; 
+            width: 350px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: rgb(244, 204, 244); 
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-container form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .login-container form input[type="text"],
+        .login-container form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .login-container form input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-container form input[type="submit"]:hover {
+            background-color: #4b0082;
+        }
+
+        .login-container .links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .login-container .links a {
+            display: block;
+            margin-bottom: 10px;
+            color: #6a0dad;
+            text-decoration: none;
+        }
+
+        .login-container .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+</head>
+
+<body>
+    <div class="header-container">
+        <h1>AguyjePY</h1>
+        <header>
+            <nav class="menu">
+                <nav>
+                    <a href="quienesomos.html">¿Quiénes somos?</a>
+                    <a href="comofunciona.html">¿Cómo funciona?</a>
+                    <a href="ayuda.html">Ayuda</a>
+                </nav>
+            </nav>
+        </header>
+    </div>
+
+    <div class="login-container">
+        <h2>Iniciar Sesión</h2>
+        <form id="login-form">
+            <input type="text" id="email" name="email" placeholder="Correo Electrónico" required>
+            <input type="password" id="password" name="password" placeholder="Contraseña" required>
+            <input type="submit" value="Iniciar Sesión">
+        </form>
+        
+        <div class="links">
+            <a href="registro.html">¿No tienes una cuenta? Regístrate aquí</a>
+            <a href="restablecercontra.html">¿Olvidaste tu contraseña?</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+    
+            fetch('http://127.0.0.1:5000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Inicio de sesión exitoso') {
+                    // Guardar usuario_id y nombre en localStorage
+                    localStorage.setItem('usuario_id', data.usuario_id);
+                    localStorage.setItem('nombre', data.nombre);
+                    localStorage.setItem('termino', '0');
+
+                    
+                    window.location.href = 'pantallaprincipal.html';
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'El correo electrónico o la contraseña que ingresaste son incorrectos. Además, verifica si tu cuenta ha sido activada desde tu correo electrónico. Intenta nuevamente.', 
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+    
+</body>
+</html>

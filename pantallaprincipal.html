@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla Principal</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    <style>
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #6a0dad;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #4b0082;
+        }
+
+        .line-container {
+            border-top: 2px solid #6a0dad;
+            margin: 0 20px;
+        }
+
+        .opciones-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .opcion {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .opcion:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 100%;
+            width: 2px;
+            background-color: #6a0dad;
+        }
+
+        .opcion img {
+            width: 100px;
+            height: auto;
+            display: block;
+            margin: 10px auto;
+            cursor: pointer;
+        }
+
+        .logout-button {
+            background-color: #6a0dad;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            margin-left: 20px;
+        }
+
+        .logout-button:hover {
+            background-color: #4b0082;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <h1>AguyjePY</h1>
+        <nav>
+            <a href="quienesomosPP.html">¿Quiénes somos?</a>
+            <a href="comofuncionaPP.html">¿Cómo funciona?</a>
+            <a href="ayudaPP.html">Ayuda</a>
+            <a href="miperfil.html">Mi Perfil</a>
+            <a href="login.html" class="logout-button">Cerrar Sesión</a>
+        </nav>
+    </div>
+
+    <div class="line-container"></div>
+
+    <div class="opciones-container">
+        <div class="opcion">
+            <h2>Quiero Donar</h2>
+            <a href="quierodonar.html">
+                <img src="quierodonar.png" alt="Quiero Donar">
+            </a>
+        </div>
+        <div class="opcion">
+            <h2>Necesito Ayuda</h2>
+            <a href="necesitoayuda.html">
+                <img src="necesitoayuda.png" alt="Necesito Ayuda">
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const termino = localStorage.getItem('termino') || '0'; // Obtener el valor de 'termino' o inicializar en '0'
+        const nombreUsuario = localStorage.getItem('nombre') || 'Usuario';
+
+        if (termino === '0') {
+            Swal.fire({
+                title: `¡Bienvenido/a ${nombreUsuario} a AguyjePY!`,
+                html: `
+                    <p>Nos alegra tenerte aquí. Con nuestra plataforma, puedes realizar y recibir donaciones de manera sencilla.</p>
+                    <p>Al utilizar nuestra aplicación puedes:</p>
+                    <ul style="text-align:left;">
+                        <li>Realizar donaciones de bienes a la comunidad.</li>
+                        <li>Solicitar ayuda en momentos de necesidad.</li>
+                    </ul>
+                    <p>Nos esforzamos por fomentar la solidaridad y el apoyo mutuo.</p>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#6a0dad',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.setItem('termino', '1'); // Actualizar 'termino' a '1'
+                }
+            });
+        }
+    </script>
+</body>
+</html>

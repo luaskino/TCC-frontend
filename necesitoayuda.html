@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Necesito Ayuda</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <style>
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: #6a0dad; 
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        nav a:hover {
+            background-color: #4b0082;
+        }
+
+        nav a .icon {
+            font-size: 20px;
+        }
+
+        .help-container {
+            margin-top: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .help-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .help-container textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            height: 150px;
+            margin-bottom: 20px;
+        }
+
+        .help-container select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .map-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #map {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button-container input[type="submit"],
+        .button-container .cancel-button {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button-container input[type="submit"] {
+            background-color: #6a0dad; 
+            color: white;
+        }
+
+        .button-container input[type="submit"]:hover {
+            background-color: #4b0082;
+        }
+
+        .button-container .cancel-button {
+            background-color: #6a0dad; 
+            color: white;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .button-container .cancel-button:hover {
+            background-color: #4b0082;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+</head>
+<body>
+    <div class="header-container">
+        <h1>AguyjePY</h1>
+        <nav>
+            <a href="pantallaprincipal.html">
+                <i class="fas fa-home icon"></i>
+            </a>
+            <a href="miperfil.html">Mi Perfil</a>
+        </nav>
+    </div>
+
+    <div class="help-container">
+        <h2>Describe brevemente lo que estás necesitando:</h2>
+        <form id="pedidoAyudaForm">
+            <textarea name="descripcion" placeholder="Escribe aquí tu solicitud..." required></textarea>
+            
+            <label for="categoria">Elegir categoría:</label>
+            <select name="categoria" id="categoria" required>
+                <option value="" disabled selected>Selecciona una categoría</option>
+            </select>
+            
+            <div class="map-container">
+                <h3>Selecciona tu ubicación:</h3>
+                <div id="map"></div>
+                <input type="hidden" name="ubicacion" id="ubicacion">
+            </div>
+
+            <div class="button-container">
+                <input type="submit" value="Enviar Solicitud">
+                <a href="pantallaprincipal.html" class="cancel-button">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- API de Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQGaUO4pj9oGNFbDYPspHJS5QzIyF0CtQ&libraries=places&callback=initMap" async defer></script>
+    <script>
+    function initMap() {
+        const defaultLocation = { lat: -25.2637, lng: -57.5759 }; 
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 12,
+            center: defaultLocation,
+        });
+
+        const marker = new google.maps.Marker({
+            position: defaultLocation,
+            map: map,
+            draggable: true,
+            title: "Arrastra este marcador para seleccionar tu ubicación",
+        });
+
+        google.maps.event.addListener(marker, 'position_changed', function() {
+            const position = marker.getPosition();
+            const lat = position.lat();
+            const lng = position.lng();
+            const googleMapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+            document.getElementById('ubicacion').value = googleMapsLink;
+        });
+    }
+
+    async function cargarCategorias() {
+        try {
+            const response = await fetch('http://localhost:5000/categorias');
+            const categorias = await response.json();
+            const selectCategoria = document.getElementById('categoria');
+            
+            categorias.forEach(categoria => {
+                const option = document.createElement('option');
+                option.value = categoria.categoria_id;
+                option.textContent = categoria.descripcion;
+                selectCategoria.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error al cargar las categorías:', error);
+        }
+    }
+
+    async function enviarPedidoAyuda(event) {
+        event.preventDefault();
+        const form = document.getElementById('pedidoAyudaForm');
+        const formData = new FormData(form);
+
+        const data = {
+            usuario_id: localStorage.getItem('usuario_id'), 
+            categoria_id: formData.get('categoria'),
+            descripcion: formData.get('descripcion'),
+            estado: 'pendiente',
+            ubicacion: formData.get('ubicacion'),
+        };
+
+        try {
+            const response = await fetch('http://localhost:5000/pedido_ayuda', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                // SweetAlert en lugar de alert
+                swal({
+                    title: "¡Solicitud Enviada!",
+                    text: "Tu solicitud de ayuda ha sido enviada exitosamente.",
+                    type: "success",
+                    confirmButtonText: "Aceptar",
+                }, function() {
+                    window.location.href = 'pantallaprincipal.html';  // Redirige al usuario
+                });
+            } else {
+                console.error('Error al enviar la solicitud:', response);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarCategorias();
+        document.getElementById('pedidoAyudaForm').addEventListener('submit', enviarPedidoAyuda);
+    });
+    </script>
+</body>
+</html>

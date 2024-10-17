@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Cómo funciona?</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <style>
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            display: block;
+            padding: 10px 20px;
+            background-color: #6a0dad; 
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        nav a:hover {
+            background-color: #4b0082;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .steps-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .steps-container {
+            width: 45%;
+            padding: 20px;
+            border: 1px solid #dfbcc2;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: rgba(223,188,194,255);
+            display: flex;
+            align-items: center;
+        }
+
+        .steps-container img {
+            width: 50px; 
+            height: auto;
+            margin-right: 15px;
+        }
+
+        .steps-container h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .steps-container ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .steps-container li {
+            margin-bottom: 10px;
+        }
+
+        .separator {
+            height: 100%;
+            width: 2px;
+            background-color: #ddd;
+            margin: 0 20px;
+        }
+
+        .main-title {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header-container">
+        <h1>AguyjePY</h1>
+        <nav>
+            <a href="pantallaprincipal.html">
+                <i class="fas fa-home icon"></i>
+            </a>
+            <a href="miperfil.html">Mi Perfil</a>
+        </nav>
+    </div>
+
+    <div class="main-title">
+        <h1>¿Cómo funciona?</h1>
+    </div>
+
+    <div class="steps-wrapper">
+        <div class="steps-container">
+            <img src="quierodonar.png" alt="Quiero Donar">
+            <div>
+                <h2>Quiero Donar</h2>
+                <ol>
+                    <li>Hacer click en "Quiero Donar".</li>
+                    <li>Seleccionar lo que desea donar.</li>
+                    <li>Busque en el mapa a quien donar.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="steps-container">
+            <img src="necesitoayuda.png" alt="Necesito Ayuda">
+            <div>
+                <h2>Necesito Ayuda</h2>
+                <ol>
+                    <li>Hacer click en "Necesito Ayuda".</li>
+                    <li>Crear tu pedido.</li>
+                    <li>Aguarda a que un donante se ponga en contacto con usted.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

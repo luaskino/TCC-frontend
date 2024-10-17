@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Ayuda</title>
+
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 20px;
+            position: absolute;
+            top: 20px; 
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            display: block;
+            padding: 10px 20px;
+            background-color: #6a0dad; 
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        nav a:hover {
+            background-color: #4b0082;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        p {
+            margin: 10px 0;
+        }
+
+        .content-container {
+            margin-top: 100px; 
+        }
+
+        .image-container {
+            margin-top: 20px;
+        }
+    </style>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header-container">
+        <h1>AguyjePY</h1>
+        <nav>
+            <a href="login.html">
+                <i class="fas fa-home icon"></i>
+            </a>
+        </nav>
+    </div>
+
+    <div class="content-container">
+        <p>Si tienes alguna duda, consulta o reclamo sobre la plataforma, puedes enviarnos un correo a <a href="mailto:aguyjepy1@gmail.com">aguyjepy1@gmail.com</a></p>
+        <p>Nuestro equipo de soporte estará atento a tu correo y responderá a tus preguntas lo antes posible.</p>
+        <p>¡Estamos aquí para ayudarte en tu experiencia en nuestra plataforma!</p>
+        
+        <div class="image-container">
+            <img src="error.png" alt="Imagen de error">
+        </div>
+    </div>
+</body>
+</html>

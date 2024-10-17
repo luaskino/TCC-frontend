@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiero Donar</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .header-container h1 {
+            margin: 0;
+        }
+
+        .header-container nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-container nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #6a0dad; 
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .header-container nav a:hover {
+            background-color: #4b0082; 
+        }
+
+        .header-container nav a .icon {
+            font-size: 20px;
+        }
+
+        .main-container {
+            display: flex;
+            margin: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            margin-right: 20px;
+        }
+
+        .sidebar select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQGaUO4pj9oGNFbDYPspHJS5QzIyF0CtQ"></script>
+</head>
+<body>
+    <div class="header-container">
+        <h1>AguyjePY</h1>
+        <nav>
+            <a href="pantallaprincipal.html">
+                <i class="fas fa-home icon"></i>
+            </a>
+            <a href="miperfil.html">Mi Perfil</a>
+        </nav>
+    </div>
+
+    <div class="main-container">
+        <!-- Barra de Categorías -->
+        <div class="sidebar">
+            <select id="categoria-select">
+                <option value="" selected>Selecciona una categoría</option>
+            </select>
+        </div>
+        <!-- Contenedor del mapa -->
+        <div class="map-container" id="map"></div>
+    </div>
+
+    <script>
+        let map;
+        let markers = [];
+        let infoWindow;
+
+        // Inicializar el mapa
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -25.30066, lng: -57.63591 }, // Centro inicial
+                zoom: 12
+            });
+            infoWindow = new google.maps.InfoWindow();
+        }
+
+        // Función para cargar las categorías desde la API
+        function cargarCategorias() {
+            fetch('http://127.0.0.1:5000/categorias')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('categoria-select');
+                    data.forEach(categoria => {
+                        const option = document.createElement('option');
+                        option.value = categoria.categoria_id;
+                        option.textContent = categoria.descripcion;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error al cargar las categorías:', error));
+        }
+
+        // Función para cargar los pedidos de ayuda y mostrar todos los puntos en el mapa
+        function cargarPedidos() {
+            fetch('http://127.0.0.1:5000/pedido_ayuda')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('categoria-select');
+                    
+                    // Mostrar todos los pedidos inicialmente
+                    mostrarTodosLosPedidos(data);
+
+                    // Filtrar por categoría seleccionada
+                    select.addEventListener('change', () => {
+                        const categoriaSeleccionada = select.value;
+                        const pedidosFiltrados = categoriaSeleccionada ? data.filter(pedido => pedido.categoria_id == categoriaSeleccionada) : data;
+                        mostrarTodosLosPedidos(pedidosFiltrados);
+                    });
+                })
+                .catch(error => console.error('Error al cargar los pedidos:', error));
+        }
+
+        // Función para extraer las coordenadas de la URL de Google Maps
+        function obtenerCoordenadasDeURL(url) {
+            const regex = /q=(-?\d+\.?\d*),(-?\d+\.?\d*)/;
+            const match = url.match(regex);
+            if (match) {
+                return { lat: parseFloat(match[1]), lng: parseFloat(match[2]) };
+            }
+            return null;
+        }
+
+        // Función para asignar colores a las categorías
+        function obtenerColorPorCategoria(categoriaId) {
+            const colores = {
+                1: 'red',
+                2: 'blue',
+                3: 'green'
+            };
+            return colores[categoriaId] || 'gray'; // Color por defecto si no hay categoría definida
+        }
+
+        // Función para mostrar los pedidos en el mapa
+        function mostrarTodosLosPedidos(pedidos) {
+            // Eliminar marcadores anteriores
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+
+            pedidos.forEach(pedido => {
+                const coords = obtenerCoordenadasDeURL(pedido.ubicacion);
+                if (coords) {
+                    const color = obtenerColorPorCategoria(pedido.categoria_id);
+                    const marker = new google.maps.Marker({
+                        position: coords,
+                        map: map,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 10, 
+                            fillColor: color,
+                            fillOpacity: 1,
+                            strokeColor: 'black',
+                            strokeWeight: 1
+                        }
+                    });
+                    
+                    // Mostrar información del pedido al hacer clic en el marcador
+                    marker.addListener('click', () => {
+                        const content = `
+                            <div>
+                                <h3>${pedido.nombre_completo}</h3>
+                                <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
+                                <p><strong>Dirección:</strong> ${pedido.direccion}</p>
+                                <p><strong>Ciudad:</strong> ${pedido.ciudad}</p>
+                                <p><strong>Estado:</strong> ${pedido.estado}</p>
+                                <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleDateString()}</p>
+                                <p><strong>Teléfono:</strong> <a href="https://wa.me/${pedido.celular}" target="_blank">${pedido.celular}</a></p>
+                                <p><strong>Email:</strong> ${pedido.email}</p>
+                            </div>
+                        `;
+                        infoWindow.setContent(content);
+                        infoWindow.open(map, marker);
+                    });
+                    
+                    markers.push(marker);
+                }
+            });
+        }
+
+        // Cargar las categorías y pedidos al cargar la página
+        window.onload = function() {
+            initMap();
+            cargarCategorias();
+            cargarPedidos();
+        };
+    </script>
+</body>
+</html>
