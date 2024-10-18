@@ -243,12 +243,9 @@
                             <div>
                                 <h3>${pedido.nombre_completo}</h3>
                                 <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
-                                <p><strong>Dirección:</strong> ${pedido.direccion}</p>
                                 <p><strong>Ciudad:</strong> ${pedido.ciudad}</p>
                                 <p><strong>Estado:</strong> ${pedido.estado}</p>
-                                <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleDateString()}</p>
-                                <p><strong>Teléfono:</strong> <a href="https://wa.me/${pedido.celular}" target="_blank">${pedido.celular}</a></p>
-                            </div>
+                                <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleDateString()}</p>                            </div>
                         `;
                         infoWindow.setContent(content);
                         infoWindow.open(map, marker);
@@ -264,11 +261,8 @@
                 card.innerHTML = `
                     <h3>${pedido.nombre_completo}</h3>
                     <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
-                    <p><strong>Dirección:</strong> ${pedido.direccion}</p>
                     <p><strong>Ciudad:</strong> ${pedido.ciudad}</p>
-                    <p><strong>Estado:</strong> ${pedido.estado}</p>
-                    <p><strong>Teléfono:</strong> <a href="https://wa.me/${pedido.celular}" target="_blank">${pedido.celular}</a></p>
-                `;
+                    <p><strong>Estado:</strong> ${pedido.estado}</p>                `;
                 listaContenedor.appendChild(card);
             });
         }
