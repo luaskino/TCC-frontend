@@ -126,22 +126,24 @@
     <script>
         // Mostrar términos y condiciones
         function mostrarTerminos() {
-            Swal.fire({
-                title: 'Términos y Condiciones',
-                html: `
-                    <p><strong>Al registrarte en nuestra plataforma, aceptas que utilizaremos tus datos personales para los siguientes fines:</strong></p>
-                    <ul style="text-align: left; list-style-type: disc; margin-left: 20px;">
-                        <li style="margin-bottom: 10px;">Compartiremos tus datos de contacto y ubicación con los donantes interesados en ofrecer ayuda.</li>
-                        <li style="margin-bottom: 10px;">Tu información será utilizada exclusivamente para facilitar el contacto entre donantes y solicitantes de ayuda.</li>
-                        <li style="margin-bottom: 10px;">No venderemos ni distribuiremos tu información personal a terceros sin tu consentimiento.</li>
-                        <li style="margin-bottom: 10px;">Al registrarte, aceptas recibir notificaciones relacionadas con tu solicitud de ayuda o donaciones.</li>
-                        <li style="margin-bottom: 10px;">Te comprometés a proporcionar información veraz y actualizada.</li>
-                    </ul>
-                `,
-                icon: 'info',
-                confirmButtonText: 'Cerrar'
-            });
-        }
+    Swal.fire({
+        title: 'Términos y Condiciones',
+        html: `
+            <p><strong>Al registrarte en nuestra plataforma, aceptas que utilizaremos tus datos personales para los siguientes fines:</strong></p>
+            <ul style="text-align: left; list-style-type: disc; margin-left: 20px;">
+                <li style="margin-bottom: 10px;">Compartiremos tus datos de contacto y ubicación con los donantes interesados en ofrecer ayuda.</li>
+                <li style="margin-bottom: 10px;">Tu información será utilizada exclusivamente para facilitar el contacto entre donantes y solicitantes de ayuda.</li>
+                <li style="margin-bottom: 10px;">No venderemos ni distribuiremos tu información personal a terceros sin tu consentimiento.</li>
+                <li style="margin-bottom: 10px;">Al registrarte, aceptas recibir notificaciones relacionadas con tu solicitud de ayuda o donaciones.</li>
+                <li style="margin-bottom: 10px;">Te comprometés a proporcionar información veraz y actualizada.</li>
+                <li style="margin-bottom: 10px;">Este sitio web no tiene fines comerciales ni busca generar ingresos. Fue creado exclusivamente con el objetivo de brindar ayuda a quienes lo necesiten, facilitando la conexión entre donantes y solicitantes.</li>
+            </ul>
+        `,
+        icon: 'info',
+        confirmButtonText: 'Cerrar'
+    });
+}
+
 
         // Habilitar el botón de envío solo si se aceptan los términos y condiciones
         const terminosCheckbox = document.getElementById('terminos');
