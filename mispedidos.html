@@ -57,6 +57,17 @@
             font-size: 24px;
         }
 
+        .image-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -121,7 +132,10 @@
     </div>
 
     <h2>Mis Pedidos</h2>
-    <img src="caja.png" alt="Mis Pedidos">
+    
+    <div class="image-container">
+        <img src="caja.png" alt="Mis Pedidos">
+    </div>
     
     <table id="tabla-pedidos">
         <thead>
