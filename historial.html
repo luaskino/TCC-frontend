@@ -165,7 +165,7 @@
 
         // Función para cargar los pedidos de ayuda y mostrar todos los puntos en el mapa y la lista
         function cargarPedidos() {
-            fetch('http://127.0.0.1:5000/pedido_ayuda')
+            fetch('http://127.0.0.1:5000/pedido_ayuda_todos')
                 .then(response => response.json())
                 .then(data => {
                     const select = document.getElementById('categoria-select');
@@ -262,6 +262,7 @@
                     <h3>${pedido.nombre_completo}</h3>
                     <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
                     <p><strong>Ciudad:</strong> ${pedido.ciudad}</p>
+                    <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleDateString()}</p>
                     <p><strong>Estado:</strong> ${pedido.estado}</p>                `;
                 listaContenedor.appendChild(card);
             });

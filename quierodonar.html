@@ -75,6 +75,42 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
+        /* Estilos de la ventana modal */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed; /* Mantener la ventana modal en su lugar */
+            z-index: 1; /* Asegúrate de que esté encima de todo */
+            left: 0;
+            top: 0;
+            width: 100%; /* Ancho completo */
+            height: 100%; /* Alto completo */
+            overflow: auto; /* Habilitar scroll si es necesario */
+            background-color: rgba(0, 0, 0, 0.4); /* Color de fondo con opacidad */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% desde arriba y centrado */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Ancho de la ventana modal */
+            max-width: 500px; /* Ancho máximo */
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQGaUO4pj9oGNFbDYPspHJS5QzIyF0CtQ"></script>
@@ -99,6 +135,31 @@
         </div>
         <!-- Contenedor del mapa -->
         <div class="map-container" id="map"></div>
+    </div>
+
+    <!-- Ventana Modal -->
+    <div id="surveyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Encuesta de Ayuda</h2>
+            <form id="surveyForm">
+                <label>
+                    Ayudaste a este pedido:
+                    <select name="helped" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="Si">Sí</option>
+                        <option value="No">No</option>
+                    </select>
+                </label>
+                <br><br>
+                <label>
+                    Comentario adicional:
+                    <textarea name="comments" rows="4" placeholder="Escribe aquí..."></textarea>
+                </label>
+                <br><br>
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -164,19 +225,18 @@
         // Función para asignar colores a las categorías
         function obtenerColorPorCategoria(categoriaId) {
             const colores = {
-    1: 'red',
-    2: 'blue',
-    3: 'green',
-    4: 'yellow',
-    5: 'purple',
-    6: 'orange',
-    7: 'pink',
-    8: 'brown',
-    9: 'gray',
-    10: 'black',
-    11: 'cyan'
-};
-
+                1: 'red',
+                2: 'blue',
+                3: 'green',
+                4: 'yellow',
+                5: 'purple',
+                6: 'orange',
+                7: 'pink',
+                8: 'brown',
+                9: 'gray',
+                10: 'black',
+                11: 'cyan'
+            };
             return colores[categoriaId] || 'gray'; // Color por defecto si no hay categoría definida
         }
 
@@ -215,10 +275,19 @@
                                 <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleDateString()}</p>
                                 <p><strong>Teléfono:</strong> <a href="https://wa.me/${pedido.celular}" target="_blank">${pedido.celular}</a></p>
                                 <p><strong>Email:</strong> ${pedido.email}</p>
+                                <button id="openSurveyButton" style="margin-top: 10px;">Responder Encuesta</button>
                             </div>
                         `;
                         infoWindow.setContent(content);
                         infoWindow.open(map, marker);
+
+                        // Agregar el evento al botón dentro de la ventana del marcador
+                        const surveyButton = document.getElementById('openSurveyButton');
+                        if (surveyButton) {
+                            surveyButton.onclick = function() {
+                                modal.style.display = "block"; // Mostrar la modal
+                            };
+                        }
                     });
                     
                     markers.push(marker);
@@ -232,6 +301,41 @@
             cargarCategorias();
             cargarPedidos();
         };
+
+        // Obtener los elementos de la modal y el botón
+        const modal = document.getElementById("surveyModal");
+        const closeButton = document.getElementsByClassName("close")[0];
+        const surveyForm = document.getElementById("surveyForm");
+
+        // Cerrar la modal cuando se hace clic en (x)
+        closeButton.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Cerrar la modal cuando se hace clic fuera de la modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Manejar el envío del formulario
+        surveyForm.onsubmit = function(event) {
+            event.preventDefault(); // Evitar el envío por defecto del formulario
+            const formData = new FormData(surveyForm);
+            const data = {
+                helped: formData.get('helped'),
+                comments: formData.get('comments')
+            };
+            
+            console.log('Datos enviados:', data); // Aquí puedes manejar los datos (enviar a un servidor, etc.)
+            
+            // Cerrar la modal después de enviar
+            modal.style.display = "none";
+            
+            // Limpiar el formulario
+            surveyForm.reset();
+        }
     </script>
 </body>
 </html>
