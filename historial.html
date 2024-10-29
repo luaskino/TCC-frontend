@@ -47,10 +47,6 @@
             background-color: #4b0082; 
         }
 
-        .header-container nav a .icon {
-            font-size: 20px;
-        }
-
         .main-container {
             display: flex;
             flex-direction: column;
@@ -96,6 +92,20 @@
         .pedido-card .pedido-id {
             font-size: 14px;
             color: #999;
+        }
+
+        .encuesta-lista {
+            margin-top: 10px;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+
+        .encuesta-item {
+            margin: 5px 0;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f1f1f1;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -173,10 +183,38 @@
                     <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
                     <p><strong>Ciudad:</strong> ${pedido.ciudad}</p>
                     <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleDateString()}</p>
-                    <p><strong>Estado:</strong> ${pedido.estado}</p>                
+                    <p><strong>Estado:</strong> ${pedido.estado}</p>
+                    <div class="encuesta-lista" id="encuesta-lista-${pedido.pedido_id}"></div> <!-- Contenedor para las encuestas -->
                 `;
                 listaContenedor.appendChild(card);
+
+                // Cargar encuestas para el pedido
+                cargarEncuestas(pedido.pedido_id);
             });
+        }
+
+        // Función para cargar las encuestas de un pedido
+        function cargarEncuestas(pedido_id) {
+            fetch(`http://127.0.0.1:5000/encuesta/${pedido_id}`)
+                .then(response => response.json())
+                .then(encuestas => {
+                    const encuestaContenedor = document.getElementById(`encuesta-lista-${pedido_id}`);
+                    if (Array.isArray(encuestas) && encuestas.length > 0) {
+                        encuestas.forEach(encuesta => {
+                            const encuestaDiv = document.createElement('div');
+                            encuestaDiv.classList.add('encuesta-item');
+                            encuestaDiv.innerHTML = `
+                                <p><strong>Ayudaste:</strong> ${encuesta.ayudaste}</p>
+                                <p><strong>Comentario:</strong> ${encuesta.comentario}</p>
+                                <p><strong>Fecha:</strong> ${new Date(encuesta.fecha).toLocaleDateString()}</p>
+                            `;
+                            encuestaContenedor.appendChild(encuestaDiv);
+                        });
+                    } else {
+                        encuestaContenedor.innerHTML = '<p>No hay encuestas para este pedido.</p>';
+                    }
+                })
+                .catch(error => console.error('Error al cargar las encuestas:', error));
         }
 
         // Inicializar la aplicación al cargar
