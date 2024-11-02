@@ -16,6 +16,26 @@
             padding: 10px;
         }
 
+        .header-container h1 {
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-family: 'Raleway', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .rojo {
+            color: red;
+        }
+        .blanco {
+            color: white;
+        }
+        .azul {
+            color: blue;
+        }
+        .negro {
+            color: black;
+        }
+
         nav {
             display: flex;
             gap: 20px;
@@ -89,7 +109,16 @@
 </head>
 <body>
     <div class="header-container">
-        <h1>AguyjePY</h1>
+        <h1>
+            <span class="rojo">A</span>
+            <span class="rojo">g</span>
+            <span class="blanco">u</span>
+            <span class="blanco">y</span>
+            <span class="azul">j</span>
+            <span class="azul">e</span>
+            <span class="negro">p</span>
+            <span class="negro">y</span>
+        </h1>
         <nav>
             <a href="quienesomosPP.html">¿Quiénes somos?</a>
             <a href="comofuncionaPP.html">¿Cómo funciona?</a>
@@ -117,7 +146,7 @@
     </div>
 
     <script>
-        const termino = localStorage.getItem('termino') || '0'; // Obtener el valor de 'termino' o inicializar en '0'
+        const termino = localStorage.getItem('termino') || '0'; 
         const nombreUsuario = localStorage.getItem('nombre') || 'Usuario';
 
         if (termino === '0') {
@@ -137,7 +166,7 @@
                 confirmButtonColor: '#6a0dad',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    localStorage.setItem('termino', '1'); // Actualizar 'termino' a '1'
+                    localStorage.setItem('termino', '1'); 
                 }
             });
         }

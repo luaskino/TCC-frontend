@@ -7,6 +7,20 @@
     <link rel="stylesheet" href="estilo.css">
     <link rel="shortcut icon" href="icono.png">
     <style>
+        .header-container {
+            display: flex;
+            align-items: left;
+            justify-content: left;
+            margin-top: 20px;
+        }
+
+        .header-container h1 {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-family: 'Raleway', sans-serif; 
+            text-transform: uppercase;
+        }
+
+        /* Resto del estilo de registro */
         .registro-container {
             display: flex;
             flex-direction: column;
@@ -87,11 +101,37 @@
         .terminos-container input {
             margin-right: 10px;
         }
+
+        /* Estilos para las letras coloreadas del título */
+        .rojo {
+            color: red;
+        }
+        .blanco {
+            color: white;
+        }
+        .azul {
+            color: blue;
+        }
+        .negro {
+            color: black;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <h1>AguyjePY</h1>
+    <div class="header-container">
+        <h1>
+            <span class="rojo">A</span>
+            <span class="rojo">g</span>
+            <span class="blanco">u</span>
+            <span class="blanco">y</span>
+            <span class="azul">j</span>
+            <span class="azul">e</span>
+            <span class="negro">p</span>
+            <span class="negro">y</span>
+        </h1>
+    </div>
+
     <div class="registro-container">
         <h2>Crea tu cuenta</h2>
         <form id="registroForm">
@@ -107,9 +147,7 @@
             <input type="text" name="barrio" placeholder="Barrio" required>
             <input type="text" name="direccion" placeholder="Dirección" required>
             <input type="email" name="correo" placeholder="Correo electrónico" required>
-            <input type="password" name="password" placeholder="Contraseña" required
-                   pattern="(?=.*\d).{8,}" 
-                   title="La contraseña debe tener al menos 8 caracteres y al menos 1 número">
+            <input type="password" name="password" placeholder="Contraseña" required pattern="(?=.*\d).{8,}" title="La contraseña debe tener al menos 8 caracteres y al menos 1 número">
 
             <div class="terminos-container">
                 <input type="checkbox" id="terminos" name="terminos">
@@ -126,24 +164,23 @@
     <script>
         // Mostrar términos y condiciones
         function mostrarTerminos() {
-    Swal.fire({
-        title: 'Términos y Condiciones',
-        html: `
-            <p><strong>Al registrarte en nuestra plataforma, aceptas que utilizaremos tus datos personales para los siguientes fines:</strong></p>
-            <ul style="text-align: left; list-style-type: disc; margin-left: 20px;">
-                <li style="margin-bottom: 10px;">Compartiremos tus datos de contacto y ubicación con los donantes interesados en ofrecer ayuda.</li>
-                <li style="margin-bottom: 10px;">Tu información será utilizada exclusivamente para facilitar el contacto entre donantes y solicitantes de ayuda.</li>
-                <li style="margin-bottom: 10px;">No venderemos ni distribuiremos tu información personal a terceros sin tu consentimiento.</li>
-                <li style="margin-bottom: 10px;">Al registrarte, aceptas recibir notificaciones relacionadas con tu solicitud de ayuda o donaciones.</li>
-                <li style="margin-bottom: 10px;">Te comprometés a proporcionar información veraz y actualizada.</li>
-                <li style="margin-bottom: 10px;">Este sitio web no tiene fines comerciales ni busca generar ingresos. Fue creado exclusivamente con el objetivo de brindar ayuda a quienes lo necesiten, facilitando la conexión entre donantes y solicitantes.</li>
-            </ul>
-        `,
-        icon: 'info',
-        confirmButtonText: 'Cerrar'
-    });
-}
-
+            Swal.fire({
+                title: 'Términos y Condiciones',
+                html: `
+                    <p><strong>Al registrarte en nuestra plataforma, aceptas que utilizaremos tus datos personales para los siguientes fines:</strong></p>
+                    <ul style="text-align: left; list-style-type: disc; margin-left: 20px;">
+                        <li style="margin-bottom: 10px;">Compartiremos tus datos de contacto y ubicación con los donantes interesados en ofrecer ayuda.</li>
+                        <li style="margin-bottom: 10px;">Tu información será utilizada exclusivamente para facilitar el contacto entre donantes y solicitantes de ayuda.</li>
+                        <li style="margin-bottom: 10px;">No venderemos ni distribuiremos tu información personal a terceros sin tu consentimiento.</li>
+                        <li style="margin-bottom: 10px;">Al registrarte, aceptas recibir notificaciones relacionadas con tu solicitud de ayuda o donaciones.</li>
+                        <li style="margin-bottom: 10px;">Te comprometés a proporcionar información veraz y actualizada.</li>
+                        <li style="margin-bottom: 10px;">Este sitio web no tiene fines comerciales ni busca generar ingresos. Fue creado exclusivamente con el objetivo de brindar ayuda a quienes lo necesiten, facilitando la conexión entre donantes y solicitantes.</li>
+                    </ul>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Cerrar'
+            });
+        }
 
         // Habilitar el botón de envío solo si se aceptan los términos y condiciones
         const terminosCheckbox = document.getElementById('terminos');
@@ -191,8 +228,9 @@
 
             if (!terminosCheckbox.checked) {
                 Swal.fire({
-                    title: 'Debes aceptar los Términos y Condiciones',
-                    icon: 'warning'
+                    title: 'Error',
+                    text: 'Debes aceptar los términos y condiciones para continuar.',
+                    icon: 'error'
                 });
                 return;
             }
@@ -200,44 +238,35 @@
             const formData = new FormData(this);
             const data = {};
             formData.forEach((value, key) => {
-                if (key === 'cedula' || key === 'celular') {
-                    data[key] = value ? parseInt(value) : 0;
-                } else {
-                    data[key] = value || null;
-                }
+                data[key] = value;
             });
 
             try {
-                const response = await fetch('http://127.0.0.1:5000/register', {
+                const response = await fetch('http://127.0.0.1:5000/registro', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(data)
                 });
 
                 if (response.ok) {
                     Swal.fire({
-                        title: 'Registro Exitoso',
-                        text: 'Te has registrado correctamente. Ahora debes activar tu cuenta desde tu correo electrónico. Redirigiendo al inicio de sesión...',
-                        icon: 'success',
-                        timer: 5000,
-                        showConfirmButton: false
+                        title: 'Éxito',
+                        text: 'Registro completado. Revisa tu correo para más detalles.',
+                        icon: 'success'
                     }).then(() => {
                         window.location.href = 'login.html';
                     });
                 } else {
-                    const error = await response.text();
-                    Swal.fire({
-                        title: 'Error en el Registro',
-                        text: error,
-                        icon: 'error'
-                    });
+                    throw new Error('Error en el registro');
                 }
+
             } catch (error) {
+                console.error('Error al registrar:', error);
                 Swal.fire({
                     title: 'Error',
-                    text: 'Hubo un problema con el servidor. Inténtalo más tarde.',
+                    text: 'No se pudo completar el registro. Inténtalo más tarde.',
                     icon: 'error'
                 });
             }

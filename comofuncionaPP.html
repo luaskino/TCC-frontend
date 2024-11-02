@@ -33,9 +33,19 @@
             background-color: #4b0082;
         }
 
-        h1 {
-            margin: 0;
+        /* Estilos para el logo de AGUYJEPY con sombreado y tipografía */
+        .logo {
+            font-family: 'Raleway', sans-serif;
+            font-size: 2rem;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
+
+        /* Colores de letras del logo */
+        .rojo { color: red; }
+        .blanco { color: white; }
+        .azul { color: blue; }
+        .negro { color: black; }
 
         .steps-wrapper {
             display: flex;
@@ -90,7 +100,16 @@
 </head>
 <body>
     <div class="header-container">
-        <h1>AguyjePY</h1>
+        <h1 class="logo">
+            <span class="rojo">A</span>
+            <span class="rojo">g</span>
+            <span class="blanco">u</span>
+            <span class="blanco">y</span>
+            <span class="azul">j</span>
+            <span class="azul">e</span>
+            <span class="negro">p</span>
+            <span class="negro">y</span>
+        </h1>
         <nav>
             <a href="pantallaprincipal.html">
                 <i class="fas fa-home icon"></i>

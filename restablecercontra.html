@@ -7,6 +7,34 @@
     <link rel="stylesheet" href="estilo.css">
     <link rel="shortcut icon" href="icono.png">
     <style>
+        .header-container {
+            display: flex;
+            align-items: left;
+            justify-content: left;
+            margin-bottom: 20px;
+        }
+
+        .header-container h1 {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-family: 'Raleway', sans-serif; 
+            text-transform: uppercase;
+            text-align: center; /* Centramos el texto */
+        }
+
+        /* Estilos para las letras coloreadas del título */
+        .rojo {
+            color: red;
+        }
+        .blanco {
+            color: white;
+        }
+        .azul {
+            color: blue;
+        }
+        .negro {
+            color: black;
+        }
+
         .reset-container {
             display: flex;
             flex-direction: column;
@@ -83,11 +111,23 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <h1>AguyjePY</h1>
+
+    <div class="header-container">
+        <h1>
+            <span class="rojo">A</span>
+            <span class="rojo">g</span>
+            <span class="blanco">u</span>
+            <span class="blanco">y</span>
+            <span class="azul">j</span>
+            <span class="azul">e</span>
+            <span class="negro">p</span>
+            <span class="negro">y</span>
+        </h1>
+    </div>
+
     <div class="reset-container">
         <h2>Restablecer Contraseña</h2>
         <p>Ingresa tu correo electrónico para recibir el enlace de restablecimiento de contraseña:</p>
-        
         
         <form id="resetForm">
             <input type="email" name="email" placeholder="Correo electrónico" required>
