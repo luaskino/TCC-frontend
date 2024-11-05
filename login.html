@@ -8,7 +8,6 @@
         <title>Aguyje PY</title>
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
-
         <style>
             .header-container {
                 display: flex;
@@ -211,7 +210,6 @@
                     localStorage.setItem('nombre', data.nombre);
                     localStorage.setItem('termino', '0');
 
-                    
                     window.location.href = 'pantallaprincipal.html';
                 } else {
                     Swal.fire({
@@ -224,6 +222,14 @@
             .catch(error => {
                 console.error('Error:', error);
             });
+        });
+
+        // Agregar evento para detectar la tecla "Enter"
+        document.getElementById('login-form').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Evitar el comportamiento predeterminado
+                document.querySelector('input[type="submit"]').click(); // Simular clic en el botón "Iniciar Sesión"
+            }
         });
     </script>
     
