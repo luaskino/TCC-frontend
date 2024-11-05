@@ -23,9 +23,6 @@
 
         .header-container h1 {
             margin: 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-family: 'Raleway', sans-serif; 
-            text-transform: uppercase;
         }
 
         .header-container nav {
@@ -133,36 +130,13 @@
             border-radius: 5px;
             background-color: #e9ecef; /* Color suave para el fondo */
         }
-
-        /* Estilos para las letras coloreadas del título */
-        .rojo {
-            color: red;
-        }
-        .blanco {
-            color: white;
-        }
-        .azul {
-            color: blue;
-        }
-        .negro {
-            color: black;
-        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQGaUO4pj9oGNFbDYPspHJS5QzIyF0CtQ"></script>
 </head>
 <body>
     <div class="header-container">
-        <h1>
-            <span class="rojo">A</span>
-            <span class="rojo">g</span>
-            <span class="blanco">u</span>
-            <span class="blanco">y</span>
-            <span class="azul">j</span>
-            <span class="azul">e</span>
-            <span class="negro">p</span>
-            <span class="negro">y</span>
-        </h1>
+        <h1>AguyjePY</h1>
         <nav>
             <a href="pantallaprincipal.html">
                 <i class="fas fa-home icon"></i>
@@ -282,30 +256,82 @@
                         map: map,
                         icon: {
                             path: google.maps.SymbolPath.CIRCLE,
+                            scale: 10,
                             fillColor: color,
-                            fillOpacity: 0.6,
-                            strokeWeight: 0,
-                            scale: 10
+                            fillOpacity: 1,
+                            strokeColor: 'black',
+                            strokeWeight: 1
                         }
                     });
 
                     marker.addListener('click', () => {
-                        currentPedidoId = pedido.id; // Guardamos el ID del pedido actual
-                        const contenido = `<h3>${pedido.titulo}</h3><p>${pedido.descripcion}</p>`;
-                        infoWindow.setContent(contenido);
+                        const content = `
+                            <div>
+                                <h3>${pedido.nombre_completo}</h3>
+                                <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
+                                <p><strong>Dirección:</strong> ${pedido.direccion}</p>
+                                <p><strong>Ciudad:</strong> ${pedido.ciudad}</p>
+                                <p><strong>Estado:</strong> ${pedido.estado}</p>
+                                <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleDateString()}</p>
+                                <p><strong>Teléfono:</strong> <a href="https://wa.me/${pedido.celular}" target="_blank">${pedido.celular}</a></p>
+                                <p><strong>Email:</strong> ${pedido.email}</p>
+                            </div>
+                        `;
+                        infoWindow.setContent(content);
                         infoWindow.open(map, marker);
-                        document.getElementById('pedido-descripcion').innerHTML = contenido; // Actualizamos la descripción en el formulario
+
+                        // Guardar el ID del pedido actual
+                        currentPedidoId = pedido.pedido_id; 
+                        // Mostrar la descripción del pedido en el formulario
+                        document.getElementById('pedido-descripcion').textContent = pedido.descripcion;
                     });
+
                     markers.push(marker);
                 }
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // Manejar el envío del formulario
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            if (currentPedidoId === null) {
+                alert('Por favor, selecciona un pedido antes de enviar la encuesta.');
+                return;
+            }
+
+            const usuarioId = localStorage.getItem('usuario_id'); // Obtener el usuario_id del almacenamiento local
+            const ayuda = document.querySelector('input[name="ayuda"]:checked').value; // Obtener valor de ayuda
+            const comentario = document.getElementById('comentario').value; // Obtener comentario
+
+            const data = {
+                pedido_id: currentPedidoId, // Usar el pedido ID actual
+                usuario_id: usuarioId,
+                ayudaste: ayuda,
+                comentario: comentario
+            };
+
+            fetch('http://127.0.0.1:5000/encuesta', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Formulario enviado con éxito.');
+                } else {
+                    alert('Error al enviar el formulario.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        window.onload = function() {
+            initMap();
             cargarCategorias();
             cargarPedidos();
-            initMap();
-        });
+        };
     </script>
 </body>
 </html>
+
