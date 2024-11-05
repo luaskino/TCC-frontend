@@ -56,6 +56,44 @@
             margin: 20px;
         }
 
+        .totales-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background-color: #9a2525;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .total-card {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            width: 150px;
+            background-color: #6a0dad;
+            color: white;
+        }
+
+        .total-card-finalizado {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            width: 150px;
+            background-color: #0e972b;
+            color: white;
+        }
+
+        .total-card h3 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .total-card p {
+            margin: 5px 0 0;
+            font-size: 18px;
+        }
+
         .sidebar {
             width: 250px;
             margin-right: 20px;
@@ -146,6 +184,18 @@
         </nav>
     </div>
 
+        <!-- Totales de pedidos -->
+        <div class="totales-container" id="totales-container">
+            <div class="total-card-finalizado">
+                <h3 id="total-finalizado">0</h3>
+                <p>Pedidos Finalizados</p>
+            </div>
+            <div class="total-card">
+                <h3 id="total-pendiente">0</h3>
+                <p>Pedidos Pendientes</p>
+            </div>
+        </div>
+
     <div class="main-container">
         <!-- Barra de Categorías -->
         <div class="sidebar">
@@ -159,6 +209,19 @@
     </div>
 
     <script>
+
+                // Función para obtener los totales de pedidos
+                function cargarTotalesPedidos() {
+            fetch('http://127.0.0.1:5000/totales_pedidos')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('total-finalizado').textContent = data.finalizado;
+                    document.getElementById('total-pendiente').textContent = data.pendiente;
+                })
+                .catch(error => console.error('Error al cargar los totales de pedidos:', error));
+        }
+
+
         // Función para cargar las categorías desde la API
         function cargarCategorias() {
             fetch('http://127.0.0.1:5000/categorias')
@@ -245,6 +308,7 @@
 
         // Inicializar la aplicación al cargar
         window.onload = () => {
+            cargarTotalesPedidos();  // Cargar totales de pedidos
             cargarCategorias();
             cargarPedidos();
         };
