@@ -278,52 +278,65 @@
         }
 
         function mostrarTodosLosPedidos(pedidos) {
-            markers.forEach(marker => marker.setMap(null));
-            markers = [];
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
 
-            pedidos.forEach(pedido => {
-                const coords = obtenerCoordenadasDeURL(pedido.ubicacion);
-                if (coords) {
-                    const color = obtenerColorPorCategoria(pedido.categoria_id);
-                    const marker = new google.maps.Marker({
-                        position: coords,
-                        map: map,
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: 10,
-                            fillColor: color,
-                            fillOpacity: 1,
-                            strokeColor: 'black',
-                            strokeWeight: 1
-                        }
-                    });
-
-                    marker.addListener('click', () => {
-                        const content = `
-                            <div>
-                                <h3>${pedido.nombre_completo}</h3>
-                                <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
-                                <p><strong>Dirección:</strong> ${pedido.direccion}</p>
-                                <p><strong>Ciudad:</strong> ${pedido.ciudad}</p>
-                                <p><strong>Estado:</strong> ${pedido.estado}</p>
-                                <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleDateString()}</p>
-                                <p><strong>Teléfono:</strong> <a href="https://wa.me/${pedido.celular}" target="_blank">${pedido.celular}</a></p>
-                                <p><strong>Email:</strong> ${pedido.email}</p>
-                            </div>
-                        `;
-                        infoWindow.setContent(content);
-                        infoWindow.open(map, marker);
-
-                        // Guardar el ID del pedido actual
-                        currentPedidoId = pedido.pedido_id; 
-                        // Mostrar la descripción del pedido en el formulario
-                        document.getElementById('pedido-descripcion').textContent = pedido.descripcion;
-                    });
-
-                    markers.push(marker);
+    pedidos.forEach(pedido => {
+        const coords = obtenerCoordenadasDeURL(pedido.ubicacion);
+        if (coords) {
+            const color = obtenerColorPorCategoria(pedido.categoria_id);
+            const marker = new google.maps.Marker({
+                position: coords,
+                map: map,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: color,
+                    fillOpacity: 1,
+                    strokeColor: 'black',
+                    strokeWeight: 1
                 }
             });
+
+            marker.addListener('click', () => {
+                // Generar el contenido del infowindow incluyendo los detalles
+                const detallesHTML = pedido.detalles.map(detalle => `
+                    <li>${detalle.item_nombre}: ${detalle.cantidad}</li>
+                `).join('');
+
+                const content = `
+                    <div>
+                        <h3>${pedido.nombre_completo}</h3>
+                        <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
+                        <p><strong>Dirección:</strong> ${pedido.direccion}</p>
+                        <p><strong>Ciudad:</strong> ${pedido.ciudad}</p>
+                        <p><strong>Estado:</strong> ${pedido.estado}</p>
+                        <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleDateString()}</p>
+                        <p><strong>Teléfono:</strong> <a href="https://wa.me/${pedido.celular}" target="_blank">${pedido.celular}</a></p>
+                        <p><strong>Email:</strong> ${pedido.email}</p>
+                        <p><strong>Detalles:</strong></p>
+                        <ul>${detallesHTML}</ul>
+                    </div>
+                `;
+                infoWindow.setContent(content);
+                infoWindow.open(map, marker);
+
+                // Guardar el ID del pedido actual
+                currentPedidoId = pedido.pedido_id;
+
+                // Mostrar la descripción y detalles del pedido en el formulario
+                document.getElementById('pedido-descripcion').innerHTML = `
+                    <p><strong>Descripción:</strong> ${pedido.descripcion}</p>
+                    <p><strong>Detalles:</strong></p>
+                    <ul>${detallesHTML}</ul>
+                `;
+            });
+
+            markers.push(marker);
         }
+    });
+}
+
 
         // Manejar el envío del formulario
         document.getElementById('submit-btn').addEventListener('click', () => {
