@@ -139,6 +139,43 @@
             color: black;
         }
     </style>
+    <style>
+        .item-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .item-nombre, .item-cantidad {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .remove-item {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .remove-item:hover {
+            background-color: #ff1a1a;
+        }
+        #add-item {
+            margin-top: 10px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        #add-item:hover {
+            background-color: #45a049;
+        }
+    </style>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 </head>
@@ -171,22 +208,61 @@
             <select name="categoria" id="categoria" required>
                 <option value="" disabled selected>Selecciona una categoría</option>
             </select>
-            
+    
+            <div id="item-container">
+                <h3>¿Necesitas algo específico? Añade ítems y cantidades:</h3>
+                <div class="item-group">
+                    <input type="text" required name="item_nombre[]" placeholder="Nombre del ítem" class="item-nombre">
+                    <input type="number" required name="cantidad[]" placeholder="Cantidad" min="1" class="item-cantidad">
+                    <button type="button" class="remove-item">Eliminar</button>
+                </div>
+            </div>
+            <button type="button" id="add-item">Añadir Ítem</button>
+    
             <div class="map-container">
                 <h3>Selecciona tu ubicación:</h3>
                 <div id="map"></div>
                 <input type="hidden" name="ubicacion" id="ubicacion">
             </div>
-
+    
             <div class="button-container">
                 <input type="submit" value="Enviar Solicitud">
                 <a href="pantallaprincipal.html" class="cancel-button">Cancelar</a>
             </div>
         </form>
     </div>
+    
 
     <!-- API de Google Maps -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQGaUO4pj9oGNFbDYPspHJS5QzIyF0CtQ&libraries=places&callback=initMap" async defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarCategorias();
+            document.getElementById('pedidoAyudaForm').addEventListener('submit', enviarPedidoAyuda);
+            
+            const addItemButton = document.getElementById('add-item');
+            const itemContainer = document.getElementById('item-container');
+        
+            addItemButton.addEventListener('click', () => {
+                const itemGroup = document.createElement('div');
+                itemGroup.classList.add('item-group');
+                
+                itemGroup.innerHTML = `
+                    <input type="text" name="item_nombre[]" placeholder="Nombre del ítem" class="item-nombre" required>
+                    <input type="number" name="cantidad[]" placeholder="Cantidad" min="1" class="item-cantidad" required>
+                    <button type="button" class="remove-item">Eliminar</button>
+                `;
+                
+                itemGroup.querySelector('.remove-item').addEventListener('click', () => {
+                    itemGroup.remove();
+                });
+        
+                itemContainer.appendChild(itemGroup);
+            });
+        });
+        </script>
+        
+
     <script>
     function initMap() {
         const defaultLocation = { lat: -25.2637, lng: -57.5759 }; 
@@ -229,49 +305,54 @@
     }
 
     async function enviarPedidoAyuda(event) {
-        event.preventDefault();
-        const form = document.getElementById('pedidoAyudaForm');
-        const formData = new FormData(form);
+    event.preventDefault();
+    const form = document.getElementById('pedidoAyudaForm');
+    const formData = new FormData(form);
 
-        const data = {
-            usuario_id: localStorage.getItem('usuario_id'), 
-            categoria_id: formData.get('categoria'),
-            descripcion: formData.get('descripcion'),
-            estado: 'pendiente',
-            ubicacion: formData.get('ubicacion'),
-        };
+    const data = {
+        usuario_id: localStorage.getItem('usuario_id'),
+        categoria_id: formData.get('categoria'),
+        descripcion: formData.get('descripcion'),
+        estado: 'pendiente',
+        ubicacion: formData.get('ubicacion'),
+        detalles: []
+    };
 
-        try {
-            const response = await fetch('http://127.0.0.1:5000/pedido_ayuda', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
+    const itemNombres = formData.getAll('item_nombre[]');
+    const cantidades = formData.getAll('cantidad[]');
 
-            if (response.ok) {
-                // SweetAlert en lugar de alert
-                swal({
-                    title: "¡Solicitud Enviada!",
-                    text: "Tu solicitud de ayuda ha sido enviada exitosamente.",
-                    type: "success",
-                    confirmButtonText: "Aceptar",
-                }, function() {
-                    window.location.href = 'pantallaprincipal.html';  // Redirige al usuario
-                });
-            } else {
-                console.error('Error al enviar la solicitud:', response);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
+    for (let i = 0; i < itemNombres.length; i++) {
+        data.detalles.push({
+            item_nombre: itemNombres[i],
+            cantidad: cantidades[i]
+        });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        cargarCategorias();
-        document.getElementById('pedidoAyudaForm').addEventListener('submit', enviarPedidoAyuda);
-    });
+    try {
+        const response = await fetch('http://127.0.0.1:5000/pedido_ayuda', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            swal({
+                title: "¡Solicitud Enviada!",
+                text: "Tu solicitud de ayuda ha sido enviada exitosamente.",
+                type: "success",
+                confirmButtonText: "Aceptar",
+            }, function() {
+                window.location.href = 'pantallaprincipal.html';
+            });
+        } else {
+            console.error('Error al enviar la solicitud:', response);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
     </script>
 </body>
 </html>
