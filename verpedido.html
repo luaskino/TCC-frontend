@@ -73,6 +73,24 @@
         .volver:hover {
             background-color: #4b0082;
         }
+
+        .btn-editar {
+            padding: 5px 10px;
+            background-color: #6a0dad;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-editar:hover {
+            background-color: #4b0082;
+        }
+
+        .input-cantidad {
+            width: 80px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -113,7 +131,9 @@
             <thead>
                 <tr>
                     <th>Ítem</th>
-                    <th>Cantidad</th>
+                    <th>Cantidad Solicitada</th>
+                    <th>Cantidad Recibida</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="detalles"></tbody>
@@ -150,8 +170,51 @@
                     const detallesTable = document.getElementById('detalles');
                     data.detalles.forEach(detalle => {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${detalle.item_nombre}</td><td>${detalle.cantidad}</td>`;
+                        tr.innerHTML = `
+                            <td>${detalle.item_nombre}</td>
+                            <td>${detalle.cantidad}</td>
+                            <td>
+                                <input type="number" class="input-cantidad" value="${detalle.cantidad_recibida}" min="0" max="${detalle.cantidad}" data-detalle-id="${detalle.detalle_id}">
+                            </td>
+                            <td>
+                                <button class="btn-editar" data-detalle-id="${detalle.detalle_id}">Guardar</button>
+                            </td>
+                        `;
                         detallesTable.appendChild(tr);
+                    });
+
+                    // Agregar evento a los botones guardar
+                    document.querySelectorAll('.btn-editar').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const detalleId = this.getAttribute('data-detalle-id');
+                            const input = document.querySelector(`input[data-detalle-id="${detalleId}"]`);
+                            const nuevaCantidad = parseInt(input.value);
+
+                            if (isNaN(nuevaCantidad) || nuevaCantidad < 0) {
+                                Swal.fire('Error', 'Cantidad inválida', 'error');
+                                return;
+                            }
+
+                            fetch(`http://localhost:5000/pedido_ayuda_detalle/${detalleId}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ cantidad_recibida: nuevaCantidad })
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Error al actualizar la cantidad');
+                                    }
+                                    return response.json();
+                                })
+                                .then(() => {
+                                    Swal.fire('Éxito', 'Cantidad actualizada correctamente', 'success');
+                                })
+                                .catch(error => {
+                                    Swal.fire('Error', error.message, 'error');
+                                });
+                        });
                     });
                 })
                 .catch(error => {
