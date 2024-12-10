@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Pedido</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="shortcut icon" href="icono.png">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #6a0dad;
+            margin-bottom: 20px;
+        }
+
+        .detalle {
+            margin-bottom: 20px;
+        }
+
+        .detalle label {
+            font-weight: bold;
+        }
+
+        .detalle p {
+            margin: 0;
+        }
+
+        .tabla-detalles {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .tabla-detalles th, .tabla-detalles td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .tabla-detalles th {
+            background-color: #6a0dad;
+            color: #fff;
+            text-align: left;
+        }
+
+        .volver {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #6a0dad;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .volver:hover {
+            background-color: #4b0082;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detalle del Pedido</h1>
+
+        <div class="detalle">
+            <label>Descripción:</label>
+            <p id="descripcion"></p>
+        </div>
+
+        <div class="detalle">
+            <label>Estado:</label>
+            <p id="estado"></p>
+        </div>
+
+        <div class="detalle">
+            <label>Fecha:</label>
+            <p id="fecha"></p>
+        </div>
+
+        <div class="detalle">
+            <label>Dirección:</label>
+            <p id="direccion"></p>
+        </div>
+
+        <div class="detalle">
+            <label>Ciudad:</label>
+            <p id="ciudad"></p>
+        </div>
+
+        <div class="detalle">
+            <label>Contacto:</label>
+            <p id="contacto"></p>
+        </div>
+
+        <table class="tabla-detalles">
+            <thead>
+                <tr>
+                    <th>Ítem</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody id="detalles"></tbody>
+        </table>
+
+        <a href="mispedidos.html" class="volver">Volver a Mis Pedidos</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const pedidoId = params.get('pedido_id');
+
+            if (!pedidoId) {
+                Swal.fire('Error', 'No se proporcionó el ID del pedido', 'error');
+                return;
+            }
+
+            fetch(`http://localhost:5000/pedido_ayuda/${pedidoId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al obtener los datos del pedido');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('descripcion').textContent = data.descripcion;
+                    document.getElementById('estado').textContent = data.estado;
+                    document.getElementById('fecha').textContent = new Date(data.fecha).toLocaleDateString();
+                    document.getElementById('direccion').textContent = data.direccion;
+                    document.getElementById('ciudad').textContent = data.ciudad;
+                    document.getElementById('contacto').textContent = `${data.nombre_completo} (${data.celular}, ${data.email})`;
+
+                    const detallesTable = document.getElementById('detalles');
+                    data.detalles.forEach(detalle => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${detalle.item_nombre}</td><td>${detalle.cantidad}</td>`;
+                        detallesTable.appendChild(tr);
+                    });
+                })
+                .catch(error => {
+                    Swal.fire('Error', error.message, 'error');
+                });
+        });
+    </script>
+</body>
+</html>
