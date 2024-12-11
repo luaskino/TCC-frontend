@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Categorías - Solicitudes de Ayuda</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #6a0dad;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Reporte de Categorías - Solicitudes de Ayuda</h1>
+        <div class="chart-container">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Función para obtener los datos de la API
+        async function obtenerDatos(url) {
+            try {
+                const response = await fetch(url);
+                return await response.json();
+            } catch (error) {
+                console.error('Error al obtener los datos de', url, ':', error);
+                return [];
+            }
+        }
+
+        // Función para contar las solicitudes por categoría
+        function contarSolicitudesPorCategoria(pedidos) {
+            const categoriaContador = {};
+
+            pedidos.forEach(pedido => {
+                const categoriaId = pedido.categoria_id;
+                if (categoriaContador[categoriaId]) {
+                    categoriaContador[categoriaId]++;
+                } else {
+                    categoriaContador[categoriaId] = 1;
+                }
+            });
+
+            return categoriaContador;
+        }
+
+        // Función para mapear los IDs con los nombres de las categorías
+        function mapearCategorias(conteo, categorias) {
+            const categoriaMap = categorias.reduce((map, categoria) => {
+                map[categoria.categoria_id] = categoria.descripcion;
+                return map;
+            }, {});
+
+            const nombres = [];
+            const valores = [];
+
+            for (const id in conteo) {
+                if (categoriaMap[id]) {
+                    nombres.push(categoriaMap[id]);
+                    valores.push(conteo[id]);
+                }
+            }
+
+            return { nombres, valores };
+        }
+
+        // Función para generar el gráfico
+        function generarGrafico(categorias, conteo) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categorias,
+                    datasets: [{
+                        label: 'Solicitudes de Ayuda',
+                        data: conteo,
+                        backgroundColor: 'rgba(106, 13, 173, 0.6)',
+                        borderColor: 'rgba(106, 13, 173, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Función principal para mostrar el reporte
+        async function mostrarReporte() {
+            // Obtener los datos de las dos APIs
+            const pedidos = await obtenerDatos('http://127.0.0.1:5000/pedido_ayuda');
+            const categorias = await obtenerDatos('http://127.0.0.1:5000/categorias');
+
+            if (pedidos.length > 0 && categorias.length > 0) {
+                // Contar las solicitudes por categoría
+                const categoriaContador = contarSolicitudesPorCategoria(pedidos);
+
+                // Mapear los IDs de categoría a nombres y valores
+                const { nombres, valores } = mapearCategorias(categoriaContador, categorias);
+
+                // Generar el gráfico con los nombres y valores
+                generarGrafico(nombres, valores);
+            } else {
+                alert('No se encontraron datos para mostrar.');
+            }
+        }
+
+        // Llamamos a la función para mostrar el reporte
+        mostrarReporte();
+    </script>
+</body>
+
+</html>
