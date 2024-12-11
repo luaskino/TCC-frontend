@@ -26,6 +26,7 @@
         .chart-container {
             width: 100%;
             height: 400px;
+            margin-bottom: 40px;
         }
     </style>
 </head>
@@ -36,6 +37,16 @@
         <h1>Reporte de Categorías - Solicitudes de Ayuda</h1>
         <div class="chart-container">
             <canvas id="categoryChart"></canvas>
+        </div>
+
+        <h1>Reporte de Pedidos por Estado</h1>
+        <div class="chart-container">
+            <canvas id="stateChart"></canvas>
+        </div>
+
+        <h1>Reporte de Pedidos por Ciudad</h1>
+        <div class="chart-container">
+            <canvas id="cityChart"></canvas>
         </div>
     </div>
 
@@ -54,42 +65,48 @@
         // Función para contar las solicitudes por categoría
         function contarSolicitudesPorCategoria(pedidos) {
             const categoriaContador = {};
-
             pedidos.forEach(pedido => {
-                const categoriaId = pedido.categoria_id;
-                if (categoriaContador[categoriaId]) {
-                    categoriaContador[categoriaId]++;
+                const categoria = pedido.categoria;
+                if (categoriaContador[categoria]) {
+                    categoriaContador[categoria]++;
                 } else {
-                    categoriaContador[categoriaId] = 1;
+                    categoriaContador[categoria] = 1;
                 }
             });
-
             return categoriaContador;
         }
 
-        // Función para mapear los IDs con los nombres de las categorías
-        function mapearCategorias(conteo, categorias) {
-            const categoriaMap = categorias.reduce((map, categoria) => {
-                map[categoria.categoria_id] = categoria.descripcion;
-                return map;
-            }, {});
-
-            const nombres = [];
-            const valores = [];
-
-            for (const id in conteo) {
-                if (categoriaMap[id]) {
-                    nombres.push(categoriaMap[id]);
-                    valores.push(conteo[id]);
+        // Función para contar las solicitudes por estado
+        function contarSolicitudesPorEstado(pedidos) {
+            const estadoContador = {};
+            pedidos.forEach(pedido => {
+                const estado = pedido.estado;
+                if (estadoContador[estado]) {
+                    estadoContador[estado]++;
+                } else {
+                    estadoContador[estado] = 1;
                 }
-            }
+            });
+            return estadoContador;
+        }
 
-            return { nombres, valores };
+        // Función para contar las solicitudes por ciudad
+        function contarSolicitudesPorCiudad(pedidos) {
+            const ciudadContador = {};
+            pedidos.forEach(pedido => {
+                const ciudad = pedido.ciudad;
+                if (ciudadContador[ciudad]) {
+                    ciudadContador[ciudad]++;
+                } else {
+                    ciudadContador[ciudad] = 1;
+                }
+            });
+            return ciudadContador;
         }
 
         // Función para generar el gráfico
-        function generarGrafico(categorias, conteo) {
-            const ctx = document.getElementById('categoryChart').getContext('2d');
+        function generarGrafico(idCanvas, categorias, conteo) {
+            const ctx = document.getElementById(idCanvas).getContext('2d');
             const chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -120,19 +137,27 @@
 
         // Función principal para mostrar el reporte
         async function mostrarReporte() {
-            // Obtener los datos de las dos APIs
-            const pedidos = await obtenerDatos('http://127.0.0.1:5000/pedido_ayuda');
-            const categorias = await obtenerDatos('http://127.0.0.1:5000/categorias');
+            // Obtener los datos de la API
+            const pedidos = await obtenerDatos('http://localhost:5000/pedido_ayuda_todos');
 
-            if (pedidos.length > 0 && categorias.length > 0) {
-                // Contar las solicitudes por categoría
+            if (pedidos.length > 0) {
+                // Reporte de solicitudes por categoría
                 const categoriaContador = contarSolicitudesPorCategoria(pedidos);
+                const categorias = Object.keys(categoriaContador);
+                const conteoCategorias = Object.values(categoriaContador);
+                generarGrafico('categoryChart', categorias, conteoCategorias);
 
-                // Mapear los IDs de categoría a nombres y valores
-                const { nombres, valores } = mapearCategorias(categoriaContador, categorias);
+                // Reporte de solicitudes por estado
+                const estadoContador = contarSolicitudesPorEstado(pedidos);
+                const estados = Object.keys(estadoContador);
+                const conteoEstados = Object.values(estadoContador);
+                generarGrafico('stateChart', estados, conteoEstados);
 
-                // Generar el gráfico con los nombres y valores
-                generarGrafico(nombres, valores);
+                // Reporte de solicitudes por ciudad
+                const ciudadContador = contarSolicitudesPorCiudad(pedidos);
+                const ciudades = Object.keys(ciudadContador);
+                const conteoCiudades = Object.values(ciudadContador);
+                generarGrafico('cityChart', ciudades, conteoCiudades);
             } else {
                 alert('No se encontraron datos para mostrar.');
             }
